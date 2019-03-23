@@ -62,6 +62,8 @@ class SearchProblem:
         util.raiseNotDefined()
 
 
+
+
 def tinyMazeSearch(problem):
     """
     Returns a sequence of moves that solves tinyMaze.  For any other maze, the
@@ -71,6 +73,34 @@ def tinyMazeSearch(problem):
     s = Directions.SOUTH
     w = Directions.WEST
     return  [s, s, w, s, w, w, s, w]
+
+
+def getActionSequence(node):
+    actions = []
+
+    while node['PATH-COST'] > 0:
+        actions.insert(0, node['ACTION'])
+
+        node = node['PARENT']
+
+    return actions
+
+def getStartNode(problem):
+    node = {'STATE': problem.getStartState(), 'PATH-COST': 0}
+
+    return node
+
+def getChildNode(sucessor, parent_node):
+    child_node = {'STATE': sucessor[0],
+
+                  'ACTION': sucessor[1],
+
+                  'PARENT': parent_node,
+
+                  'PATH-COST': parent_node['PATH-COST'] + sucessor[2]}
+
+    return child_node
+
 
 def depthFirstSearch(problem):
     """
@@ -86,8 +116,65 @@ def depthFirstSearch(problem):
     print "Is the start a goal?", problem.isGoalState(problem.getStartState())
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    def depthFirstSearch(problem):
+
+        """
+
+        Search the deepest nodes in the search tree first.
+
+
+
+        Your search algorithm needs to return a list of actions that reaches the
+
+        goal. Make sure to implement a graph search algorithm.
+
+
+
+        To get started, you might want to try some of these simple commands to
+
+        understand the search problem that is being passed in:
+
+
+
+        print "Start:", problem.getStartState()
+
+        print "Is the start a goal?", problem.isGoalState(problem.getStartState())
+
+        print "Start's successors:", problem.getSuccessors(problem.getStartState())
+
+        """
+
+        node = getStartNode(problem)
+
+        if problem.isGoalState(node['STATE']): return getActionSequence(node)
+
+        frontier = util.Stack()
+
+        frontier.push(node)
+
+        explored = set()
+
+        while frontier.isEmpty() == False:
+
+            node = frontier.pop()
+
+            explored.add(node['STATE'])
+
+            for sucessor in problem.getSuccessors(node['STATE']):
+
+                child_node = getChildNode(sucessor, node)
+
+                if (child_node['STATE'] not in explored and not any(
+                        node['STATE'] == child_node['STATE'] for node in frontier.list)):
+
+                    if problem.isGoalState(child_node['STATE']):
+                        return getActionSequence(child_node)
+
+                    frontier.push(child_node)
+
+        return None
+
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
